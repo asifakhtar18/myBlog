@@ -158,7 +158,7 @@ app.put('/post',uploadMiddleware.single('file'), async (req,res) => {
 });
 
 app.get('/post', async (req,res) => {
-  mongoose.connect(MONGO_URL);
+  await mongoose.connect(MONGO_URL);
 
   res.json(
     await Post.find()
