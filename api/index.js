@@ -1,8 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require("mongoose");
-const User = require('./models/User');
-const Post = require('./models/Post');
+const User = require('./models/user');
+const Post = require('./models/post');
 const bcrypt = require('bcrypt');
 const app = express();
 const jwt = require('jsonwebtoken');
@@ -58,7 +58,6 @@ async function uploadToS3(path, originalFilename , mimetype){
 
 
 app.post('/register', async (req,res) => {
-  mongoose.connect(MONGO_URL);
 
   const {username,password} = req.body;
   try{
@@ -74,8 +73,7 @@ app.post('/register', async (req,res) => {
 });
 
 app.post('/login', async (req,res) => {
-  mongoose.connect(MONGO_URL);
-
+  
   const {username,password} = req.body;
   const userDoc = await User.findOne({username});
   const passOk = bcrypt.compareSync(password, userDoc.password);
@@ -94,7 +92,7 @@ app.post('/login', async (req,res) => {
 });
 
 app.get('/profile', (req,res) => {
-  mongoose.connect(MONGO_URL);
+  
 
   const {token} = req.cookies;
   jwt.verify(token, secret, {}, (err,info) => {
@@ -108,7 +106,7 @@ app.post('/logout', (req,res) => {
 });
 
 app.post('/post', uploadMiddleware.single('file') ,async (req,res) => {
-  mongoose.connect(MONGO_URL);
+ 
 
   const {originalname , path , mimetype} = req.file;
 
@@ -134,7 +132,7 @@ app.post('/post', uploadMiddleware.single('file') ,async (req,res) => {
 });
 
 app.put('/post',uploadMiddleware.single('file'), async (req,res) => {
-  mongoose.connect(MONGO_URL);
+ 
 
  if(req.file){
   const {originalname , path , mimetype} = req.file;
@@ -161,7 +159,7 @@ app.put('/post',uploadMiddleware.single('file'), async (req,res) => {
 });
 
 app.get('/post', async (req,res) => {
-  await mongoose.connect(MONGO_URL);
+  
 
   res.json(
     await Post.find()
@@ -174,7 +172,7 @@ app.get('/post', async (req,res) => {
 
 
 app.get('/post/:id', async (req, res) => {
-  mongoose.connect(MONGO_URL);
+  
 
   const {id} = req.params;
   const postDoc = await Post.findById(id).populate('author', ['username']);
@@ -182,8 +180,7 @@ app.get('/post/:id', async (req, res) => {
 })
 
 app.delete('/delete/:id' , async (req , res)=>{
-  mongoose.connect(MONGO_URL);
-
+  
   const {id} = req.params;
   console.log(id)
   const postDoc = await Post.deleteOne({ _id: id });
