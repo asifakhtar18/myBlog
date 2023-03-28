@@ -12,6 +12,7 @@ const uploadMiddleware = multer({dest:'tmp'});
 const {S3Client ,PutObjectCommand} = require('@aws-sdk/client-s3')
 const fs = require('fs');
 const path = require('path');
+const PORT = process.env.PORT || 4000;
 require('dotenv').config();
 
 const MONGO_URL = process.env.MONGO_URL;
@@ -194,7 +195,7 @@ app.get('*' , (req ,res)=>{
   res.sendFile(path.join(__dirname , 'build' , 'index.html'))
 })
 
-app.listen(4000 , ()=>{
+app.listen(PORT , ()=>{
   console.log("Server Started")
 });  
 
