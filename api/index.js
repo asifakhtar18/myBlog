@@ -11,16 +11,18 @@ const multer = require('multer');
 const uploadMiddleware = multer({dest:'tmp'});
 const {S3Client ,PutObjectCommand} = require('@aws-sdk/client-s3')
 const fs = require('fs');
+const path = require('path');
 require('dotenv').config();
 
 const MONGO_URL = process.env.MONGO_URL;
-
+mongoose.connect(MONGO_URL);
 
 const salt = bcrypt.genSaltSync(10);
 const secret = 'asdfe45we45w345wegw345werjktjwertkj';
 const bucket = 'asif-blog'
 
 app.use(cors({credentials:true,origin:'http://localhost:3000'}));
+app.use(express.static(path.join(__dirname, 'build')))
 app.use(express.json());
 app.use(cookieParser());
 app.use('/uploads', express.static(__dirname + '/uploads'));
@@ -187,7 +189,14 @@ app.delete('/delete/:id' , async (req , res)=>{
   res.json(postDoc)
 })
 
-app.listen(4000);
+
+app.get('*' , (req ,res)=>{
+  res.sendFile(path.join(__dirname , 'build' , 'index.html'))
+})
+
+app.listen(4000 , ()=>{
+  console.log("Server Started")
+});  
 
 
 //mongodb+srv://myblog:myblog@cluster0.dgijzez.mongodb.net/?retryWrites=true&w=majority
